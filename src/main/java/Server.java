@@ -3,21 +3,22 @@ import java.net.*;
 
 public class Server {
     public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Usage: java Server <port_number>");
+        if (args.length < 2) {
+            System.out.println("Usage: java Server <IP_ADDRESS> <PORT>");
             return;
         }
 
-        int port = Integer.parseInt(args[0]);
+        String serverIP = args[0];
+        int port = Integer.parseInt(args[1]); // Now correctly parsing the port
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
+        try (ServerSocket serverSocket = new ServerSocket(port, 50, InetAddress.getByName(serverIP))) {
+            System.out.println("Server is listening on " + serverIP + ":" + port);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected");
+                System.out.println("New client connected from " + clientSocket.getInetAddress());
 
-                new ClientHandler(clientSocket).start(); // Handle client in a new thread
+                new ClientHandler(clientSocket).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
